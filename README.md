@@ -6,6 +6,7 @@
 
 如果大家对这个感兴趣，想了解更多信息，这篇文章其实介绍得都挺好的了 https://www.jumpstartmag.com/product-review-foci-ai/
 作者就是单纯在这里稍微吐槽一下哈。
+
 <img width="479" height="372" alt="image" src="https://github.com/user-attachments/assets/a0e097a0-2837-4b37-836b-e46d25933db2" />
 
 简单来说，这个东西是一个别在裤腰带上的设备。它通过内置的传感器监测呼吸频率，从而判断用户当前的精神状况（比如是不是累了，或者是不是分心了）。
@@ -32,7 +33,10 @@
 
 至于提示方式这些，不管是在手机 App 还是在网页端上，其实都只能选择打不打开 notification。但具体是什么样的 notification、表现成什么样（比如短震几下、长震一下），这些都是写在设备内部的，本来就改不了。其他的一些 signal 也是设备直接集成在里面自己传出来的，确实没办法拿到更原始的数据了。
 
+
 <img width="580" height="678" alt="image" src="https://github.com/user-attachments/assets/260f6a0c-88f2-4344-84de-3459d881379b" />
+
+
 
 这个设备确实很坚挺。它是 2018 年初出的，我大概是 2020 年的时候去买的，都六年了它还能正常工作，不得不让人感叹这个设计真的很好。
 
