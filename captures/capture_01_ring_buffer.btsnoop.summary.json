@@ -1,0 +1,38 @@
+{
+  "source_label": "btsnoop_hci_second.log.last",
+  "privacy": {
+    "contains_only_target_att_windows": true,
+    "absolute_capture_timestamps_rebased": true,
+    "application_timestamps_rebased_when_known": true,
+    "timezone_zeroed_in_configuration_commands": true,
+    "device_uid_replaced": true,
+    "write_key_replaced": true,
+    "device_mac_replaced": true,
+    "pairing_and_non_att_traffic_removed": true,
+    "synthetic_uid_hex": "0x1122334455667788",
+    "synthetic_mac": "02:00:00:00:00:01",
+    "synthetic_write_key_hex": "0x89db6c54"
+  },
+  "input": {
+    "btsnoop_records": 65535,
+    "att_pdus": 43211,
+    "foci_frames": 7267
+  },
+  "output": {
+    "att_pdus": 43186,
+    "bytes": 1871481,
+    "session_count": 2
+  },
+  "sessions": [
+    {
+      "index": 1,
+      "frame_count": 3344,
+      "duration_seconds": 1175.082
+    },
+    {
+      "index": 2,
+      "frame_count": 3923,
+      "duration_seconds": 1549.444
+    }
+  ]
+}

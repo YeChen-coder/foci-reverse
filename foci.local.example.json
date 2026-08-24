@@ -1,0 +1,5 @@
+{
+  "address": "YOUR_DEVICE_ADDRESS",
+  "uid": 123456789,
+  "write_key": "0x12345678"
+}

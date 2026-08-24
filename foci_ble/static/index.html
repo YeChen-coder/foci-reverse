@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FOCI Desktop</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: #edf4f1;
+      background: radial-gradient(circle at 20% 0%, #213e3b, #0b1115 46%); }
+    main { width: min(1080px, 92vw); margin: 0 auto; padding: 48px 0; }
+    header { display:flex; justify-content:space-between; align-items:end; margin-bottom:28px; }
+    h1 { margin:0; letter-spacing:-.04em; font-size:clamp(32px,5vw,58px); }
+    .status { color:#8ea29e; font-size:14px; }
+    .connection-panel { display:flex; align-items:center; justify-content:flex-end;
+      gap:12px; flex-wrap:wrap; text-align:right; }
+    .connect-button { min-width:116px; }
+    .grid { display:grid; grid-template-columns:1.1fr 1.9fr; gap:18px; }
+    .card { border:1px solid #ffffff16; border-radius:22px; padding:24px;
+      background:#111b20cc; box-shadow:0 18px 50px #0005; }
+    .state { min-height:330px; display:grid; place-items:center; text-align:center; }
+    .orb { width:170px; aspect-ratio:1; border-radius:50%; display:grid; place-items:center;
+      background:radial-gradient(circle at 38% 30%, #a4ffe1, #25a97d 50%, #083b31);
+      box-shadow:0 0 70px #3de7ae55; transition:all .5s ease; }
+    .orb strong { font-size:23px; text-transform:capitalize; text-shadow:0 2px 8px #0008; }
+    .metrics { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:18px; }
+    .metric { padding:15px; background:#ffffff08; border-radius:14px; }
+    .metric label { display:block; color:#91a49f; font-size:12px; margin-bottom:5px; }
+    .metric b { font-size:25px; }
+    canvas { width:100%; height:285px; display:block; }
+    .legend { display:flex; gap:18px; color:#9aaba7; font-size:12px; margin-top:14px; }
+    .dot { width:8px; height:8px; display:inline-block; border-radius:50%; margin-right:6px; }
+    .controls { margin-top:18px; }
+    .controls h2 { margin:0 0 6px; font-size:24px; }
+    .hint { color:#91a49f; font-size:13px; line-height:1.55; margin:0 0 18px; }
+    .control-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .profile { background:#ffffff07; border:1px solid #ffffff0d; border-radius:16px; padding:18px; }
+    .profile h3 { margin:0 0 12px; font-size:16px; }
+    .alert-row { display:flex; justify-content:space-between; gap:12px; align-items:center;
+      padding:10px 0; border-bottom:1px solid #ffffff0b; }
+    .alert-row:last-of-type { border-bottom:0; }
+    .alert-copy b { display:block; font-size:14px; }
+    .alert-copy small { color:#91a49f; }
+    input[type=checkbox] { width:20px; height:20px; accent-color:#4ad6a5; }
+    button { border:0; border-radius:11px; padding:10px 15px; color:#07130f;
+      background:#55e6b0; font-weight:700; cursor:pointer; }
+    button.secondary { color:#dce8e4; background:#ffffff12; }
+    button.danger { color:#ffe3dd; background:#9b3f35; }
+    button:disabled { opacity:.45; cursor:not-allowed; }
+    .actions { display:flex; gap:10px; align-items:center; margin-top:14px; flex-wrap:wrap; }
+    .message { min-height:20px; color:#8edebf; font-size:13px; margin-top:10px; }
+    .session-panel { margin-top:16px; padding:18px; border-radius:16px;
+      background:linear-gradient(120deg,#153b34,#17252b); }
+    .session-line { display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+    .timer { font:700 34px/1 ui-monospace,Consolas,monospace; letter-spacing:-.04em; }
+    .duration { width:64px; border:1px solid #ffffff1f; background:#07110f99;
+      color:#edf4f1; border-radius:9px; padding:9px; }
+    .badge { display:inline-block; padding:5px 9px; border-radius:999px; font-size:12px;
+      color:#a6b9b4; background:#ffffff0e; }
+    .badge.active { color:#75e9bd; background:#36b78924; }
+    @media(max-width:760px){ .grid{grid-template-columns:1fr} header{align-items:start;flex-direction:column;gap:10px}
+      .connection-panel{justify-content:flex-start;text-align:left} }
+    @media(max-width:760px){ .control-grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+<main>
+  <header><div><div class="status">LOCAL · BLUETOOTH LE</div><h1>FOCI Desktop</h1></div>
+    <div class="connection-panel">
+      <div id="connection" class="status">尚未连接 FOCI</div>
+      <button id="connect-btn" class="connect-button" onclick="connectFoci()">连接 FOCI</button>
+    </div>
+  </header>
+  <section class="grid">
+    <div class="card state">
+      <div><div class="orb" id="orb"><strong id="state">waiting</strong></div>
+      <div class="metrics">
+        <div class="metric"><label>FOCUS DEPTH</label><b id="focus">—</b></div>
+        <div class="metric"><label>CALM</label><b id="calm">—</b></div>
+        <div class="metric"><label>SIGNAL</label><b id="signal">—</b></div>
+        <div class="metric"><label>MP SCORE</label><b id="mp">—</b></div>
+      </div></div>
+    </div>
+    <div class="card"><canvas id="chart"></canvas>
+      <div class="legend"><span><i class="dot" style="background:#55e6b0"></i>Focus</span>
+      <span><i class="dot" style="background:#71a8ff"></i>Calm</span>
+      <span><i class="dot" style="background:#f6bf66"></i>Tension</span></div>
+    </div>
+  </section>
+  <section class="card controls">
+    <h2>震动提醒控制</h2>
+    <p class="hint">这些开关直接写入 FOCI。普通使用采用“默认提醒”；开始电脑端 Deep Work 后采用“Deep Work 提醒”。建议一次只开 1–2 项。</p>
+    <div class="control-grid">
+      <div class="profile">
+        <h3>默认提醒</h3>
+        <div id="default-alerts"></div>
+        <div class="actions"><button onclick="saveAlerts('default')">保存到设备</button></div>
+      </div>
+      <div class="profile">
+        <h3>Deep Work 提醒</h3>
+        <div id="session-alerts"></div>
+        <div class="actions"><button onclick="saveAlerts('session')">保存到设备</button></div>
+      </div>
+    </div>
+    <div id="control-message" class="message"></div>
+    <div class="session-panel">
+      <div class="session-line">
+        <div>
+          <h3 style="margin:0 0 7px">电脑端 Deep Work <span id="deep-badge" class="badge">未开始</span></h3>
+          <span class="hint">时长 <input id="duration" class="duration" type="number" min="1" max="240" value="25"> 分钟；暂停只暂停计时，与官方 App 的行为一致。</span>
+        </div>
+        <div id="timer" class="timer">25:00</div>
+        <div class="actions" style="margin:0">
+          <button id="start-btn" onclick="startDeepWork()">开始</button>
+          <button id="pause-btn" class="secondary" onclick="togglePause()" disabled>暂停</button>
+          <button id="end-btn" class="danger" onclick="endDeepWork()" disabled>结束</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+const values={focus:[],calm:[],tension:[]}, maxPoints=100;
+const alertInfo={
+  distraction:["分心","形成分心连续状态时：1 次长震"],
+  early_distraction:["早期分心","即将进入分心时：2 次短震"],
+  focus_slip:["专注滑落","专注或心流连续状态中断时：3 次短震"],
+  tense:["紧张","形成紧张连续状态时：4 次短震"],
+  fatigue:["疲劳","形成疲劳连续状态时：5 次短震"]
+};
+const alertKeys=Object.keys(alertInfo);
+for(const profile of ["default","session"]){
+  const root=document.getElementById(`${profile}-alerts`);
+  root.innerHTML=alertKeys.map(key=>`<label class="alert-row">
+    <span class="alert-copy"><b>${alertInfo[key][0]}</b><small>${alertInfo[key][1]}</small></span>
+    <input id="${profile}-${key}" type="checkbox">
+  </label>`).join("");
+}
+const canvas=document.querySelector("canvas"), ctx=canvas.getContext("2d");
+function draw(){
+  const dpr=devicePixelRatio||1, r=canvas.getBoundingClientRect();
+  canvas.width=r.width*dpr; canvas.height=r.height*dpr; ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,r.width,r.height); ctx.strokeStyle="#ffffff12"; ctx.lineWidth=1;
+  for(let y=0;y<=4;y++){ctx.beginPath();ctx.moveTo(0,y*r.height/4);ctx.lineTo(r.width,y*r.height/4);ctx.stroke();}
+  [["focus","#55e6b0"],["calm","#71a8ff"],["tension","#f6bf66"]].forEach(([name,color])=>{
+    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();
+    values[name].forEach((v,i)=>{const x=i*r.width/(maxPoints-1),y=r.height-(Math.max(0,Math.min(100,v))*r.height/100);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});
+    ctx.stroke();
+  });
+}
+function set(id,v){document.getElementById(id).textContent=v??"—"}
+const colors={focused:["#a4ffe1","#25a97d","#083b31"],flow:["#caadff","#7654df","#26135c"],
+calm:["#b9e5ff","#438ac2","#102f4b"],stressed:["#ffd1b1","#d26336","#5f1c0d"],
+distracted:["#ffe39c","#c88b25","#59380a"],fatigued:["#d5d4df","#67687c","#292a35"]};
+function update(e){
+  if(e.config) applyConfig(e.config);
+  document.getElementById("connection").textContent="实时连接 · "+new Date(e.received_at*1000).toLocaleTimeString();
+  set("state",e.state_label);set("focus",e.focus_depth);set("calm",e.calm);set("signal",e.signal);set("mp",e.mp_score);
+  const c=colors[e.state_label]||["#c4d6d1","#54736b","#19312b"];
+  document.getElementById("orb").style.background=`radial-gradient(circle at 38% 30%,${c[0]},${c[1]} 50%,${c[2]})`;
+  [["focus",e.focus_depth],["calm",e.calm],["tension",e.tension_score]].forEach(([k,v])=>{values[k].push(v||0);if(values[k].length>maxPoints)values[k].shift()});
+  draw();
+}
+function applyConfig(config){
+  applyConnection(config);
+  for(const profile of ["default","session"]){
+    const alerts=config[`${profile}_alerts`]||{};
+    for(const key of alertKeys){
+      const checkbox=document.getElementById(`${profile}-${key}`);
+      if(checkbox) checkbox.checked=!!alerts[key];
+    }
+  }
+  const active=!!config.deep_work_active;
+  const badge=document.getElementById("deep-badge");
+  badge.textContent=active?"设备模式已开启":"未开始";
+  badge.classList.toggle("active",active);
+}
+function applyConnection(config){
+  const button=document.getElementById("connect-btn");
+  const status=document.getElementById("connection");
+  const state=config.connection_state||(config.connected?"connected":"disconnected");
+  if(state==="connecting"){
+    button.disabled=true;button.textContent="正在连接…";
+    status.textContent="正在扫描并连接 FOCI…";
+  }else if(state==="connected"||config.connected){
+    button.disabled=true;button.textContent="已连接";
+    status.textContent=config.address?`已连接 FOCI · ${config.address}`:"已连接 FOCI";
+  }else if(state==="demo"){
+    button.disabled=true;button.textContent="演示模式";
+    status.textContent="正在使用演示数据";
+  }else{
+    button.disabled=false;button.textContent=state==="error"?"重新连接":"连接 FOCI";
+    status.textContent=state==="error"?"FOCI 连接失败":"尚未连接 FOCI";
+  }
+}
+async function callApi(path,body){
+  const response=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const result=await response.json().catch(()=>({error:`HTTP ${response.status}`}));
+  if(!response.ok) throw new Error(result.error||`HTTP ${response.status}`);
+  applyConfig(result);
+  return result;
+}
+function message(text,error=false){
+  const el=document.getElementById("control-message");
+  el.textContent=text; el.style.color=error?"#ff9b8e":"#8edebf";
+}
+async function connectFoci(){
+  const button=document.getElementById("connect-btn");
+  button.disabled=true;button.textContent="正在连接…";
+  document.getElementById("connection").textContent="正在扫描并连接 FOCI…";
+  message("请确保 FOCI 已离开充电器，并且手机 App 没有连接它");
+  try{
+    const result=await callApi("/api/connect",{});
+    message("电脑已通过蓝牙连接 FOCI，正在等待实时数据");
+    applyConnection(result);
+  }catch(error){
+    button.disabled=false;button.textContent="重新连接";
+    document.getElementById("connection").textContent="FOCI 连接失败";
+    message(`连接失败：${error.message}`,true);
+  }
+}
+async function saveAlerts(profile){
+  const alerts={};
+  for(const key of alertKeys) alerts[key]=document.getElementById(`${profile}-${key}`).checked;
+  try{
+    await callApi("/api/alerts",{profile,alerts});
+    message(`${profile==="default"?"默认":"Deep Work"}提醒已写入 FOCI`);
+  }catch(error){ message(`写入失败：${error.message}`,true); }
+}
+let remaining=25*60, timerHandle=null, paused=false, lastTick=0;
+function renderTimer(){
+  const seconds=Math.max(0,Math.ceil(remaining));
+  document.getElementById("timer").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
+}
+function tick(now){
+  if(!paused && lastTick){
+    remaining-=(now-lastTick)/1000;
+    if(remaining<=0){remaining=0;renderTimer();endDeepWork();return;}
+  }
+  lastTick=now;renderTimer();timerHandle=requestAnimationFrame(tick);
+}
+async function startDeepWork(){
+  try{
+    await callApi("/api/deep-work",{active:true});
+    remaining=Math.max(1,Number(document.getElementById("duration").value)||25)*60;
+    paused=false;lastTick=0;
+    document.getElementById("start-btn").disabled=true;
+    document.getElementById("pause-btn").disabled=false;
+    document.getElementById("end-btn").disabled=false;
+    document.getElementById("pause-btn").textContent="暂停";
+    cancelAnimationFrame(timerHandle);timerHandle=requestAnimationFrame(tick);
+    message("Deep Work 已开始，设备现在采用右侧提醒设置");
+  }catch(error){message(`启动失败：${error.message}`,true);}
+}
+function togglePause(){
+  paused=!paused;lastTick=0;
+  document.getElementById("pause-btn").textContent=paused?"继续":"暂停";
+  message(paused?"计时已暂停；设备提醒模式保持开启":"计时已继续");
+}
+async function endDeepWork(){
+  try{
+    await callApi("/api/deep-work",{active:false});
+    cancelAnimationFrame(timerHandle);timerHandle=null;
+    document.getElementById("start-btn").disabled=false;
+    document.getElementById("pause-btn").disabled=true;
+    document.getElementById("end-btn").disabled=true;
+    message("Deep Work 已结束，设备已恢复默认提醒");
+  }catch(error){message(`结束失败：${error.message}`,true);}
+}
+const ws=new WebSocket(`${location.protocol==="https:"?"wss":"ws"}://${location.host}/ws`);
+ws.onmessage=e=>{const data=JSON.parse(e.data);data.kind==="realtime"?update(data):data.config&&applyConfig(data.config)};
+ws.onclose=()=>document.getElementById("connection").textContent="连接已断开";
+fetch("/api/status").then(r=>r.json()).then(applyConfig).catch(()=>{});
+document.getElementById("duration").addEventListener("change",e=>{if(!timerHandle){remaining=Math.max(1,Number(e.target.value)||25)*60;renderTimer();}});
+addEventListener("resize",draw);draw();
+</script>
+</body>
+</html>

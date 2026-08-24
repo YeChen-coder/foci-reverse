@@ -1,0 +1,63 @@
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.py[cod]
+*.pyd
+*.egg-info/
+build/
+dist/
+
+# Local device credentials
+foci.local.json
+foci.local.*.json
+!foci.local.example.json
+*.secrets.json
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local runtime output
+foci-data*.csv
+dashboard_*.log
+dashboard_*.pid
+*.tmp
+*.temp
+
+# Raw mobile artifacts must never enter this repository
+raw-captures/
+raw_capture/
+bugreport*.zip
+*bugreport*.txt
+logcat*.txt
+btsnoop_hci.log
+btsnoop_hci.log.last
+*.apk
+*.dex
+*.db
+*.sqlite
+*.sqlite3
+
+# Additional packet captures are private by default. The two reviewed,
+# sanitized fixtures below are intentionally tracked.
+*.pcap
+*.pcapng
+*.btsnoop
+!captures/capture_01_ring_buffer.btsnoop
+!captures/capture_02_rotation_continuation.btsnoop
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

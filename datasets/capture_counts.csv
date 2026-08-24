@@ -1,0 +1,3 @@
+capture,att_pdus,decoded_frames
+capture_01_ring_buffer.btsnoop,43186,7267
+capture_02_rotation_continuation.btsnoop,6117,1006
