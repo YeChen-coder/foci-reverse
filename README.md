@@ -34,7 +34,8 @@
 至于提示方式这些，不管是在手机 App 还是在网页端上，其实都只能选择打不打开 notification。但具体是什么样的 notification、表现成什么样（比如短震几下、长震一下），这些都是写在设备内部的，本来就改不了。其他的一些 signal 也是设备直接集成在里面自己传出来的，确实没办法拿到更原始的数据了。
 请注意一下，就是他那个手机 APP 上能出的那个 DeepWork 的报告，他这边是出不来的，不过也无伤大雅就是了。
 
-<img width="580" height="678" alt="image" src="https://github.com/user-attachments/assets/e60a7ea5-afab-4341-b7c0-9bb65c16fc56" />
+<img width="1109" height="726" alt="image" src="https://github.com/user-attachments/assets/a2c6b56e-f82b-4807-ba03-132e940640ee" />
+
 
 实时运行的时候是这样的，能显示数值：
 
