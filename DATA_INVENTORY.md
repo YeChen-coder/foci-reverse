@@ -4,7 +4,7 @@
 `DATA_INVENTORY.md` 自身之外的所有发布文件；ZIP 外层容器不在表内。
 
 - 文件数：45
-- 总字节数：11,007,695
+- 总字节数：11,016,520
 
 | 相对路径 | 字节数 | SHA-256 |
 | --- | ---: | --- |
@@ -12,7 +12,7 @@
 | `LICENSE_NOT_SELECTED.md` | 995 | `691b47539eb799ebb493de249538adc022e4a1b4c294bbd38f8ba3c5b0c55986` |
 | `PRIVACY_AUDIT.md` | 4,527 | `1914aeee5958ad9414768e818c5cd20f73d6f064d80deb1c3e82d6986f663326` |
 | `PUBLICATION_CHECKLIST.md` | 1,476 | `232cf5756df78aaffab359bbdce4996d3956ab0ceb4cc42797d963eb5c9a00cc` |
-| `README.md` | 0 | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| `README.md` | 8,825 | `946e0c862409f2661440f0a1c0a17b981e1e54407735fa757d0fdca4266c67ed` |
 | `SECURITY.md` | 1,110 | `49c59990fcb65c76b68725e47183cc86bf9a7dfbf1b4d5acfa8e60b9f45a32f2` |
 | `SETUP.md` | 5,018 | `52dc9f2659d7ab0ac32709f8a943bb12f835707a0e91b4594ac635ac94d3ae16` |
 | `Start FOCI Dashboard.cmd` | 949 | `52506903ab2f493773a13aebecf501dddb611e0c565ff006c775d1d3ad2fe691` |
